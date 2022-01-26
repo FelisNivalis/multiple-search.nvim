@@ -3,13 +3,14 @@ local M = {}
 local match_priority = 0
 local hl_colors = {}
 local hl_name = 'MultipleSearchHlGroup'
+-- TODO: set current_group's color to a different one
 local current_group = 0
 local matches = {}
 local patterns = {}
 
 function set_hl(_hl_colors)
 	for i = 0, #_hl_colors-1 do
-		vim.cmd('highlight ' .. hl_name .. i .. ' guibg=' .. _hl_colors[i])
+		vim.cmd('highlight ' .. hl_name .. i .. ' guibg=' .. _hl_colors[i+1])
 	end
 	for i = #_hl_colors, #hl_colors-1 do
 		M.matchdelete({group=i})
@@ -35,6 +36,7 @@ function get_next_group_add()
 end
 
 function M.matchadd(options)
+	-- TODO: support `magic`, `smartcase`, `ignorecase`
 	local group = get_next_group_add()
 	local m = {}
 	local pattern = options.pattern
@@ -53,6 +55,7 @@ function M.matchadd(options)
 end
 
 function M.matchdelete(options)
+	-- TODO: accept multiple groups
 	local group = options.group or current_group
 	local match = matches[group]
 	matches[group] = nil
@@ -60,10 +63,12 @@ function M.matchdelete(options)
 	for k, v in pairs(match or {}) do
 		vim.fn.matchdelete(v, k)
 	end
-	M.next_matchgroup({})
+	-- M.next_matchgroup({})
 end
 
 function M.next_matchgroup(options)
+	-- TODO: jump to match group
+	-- TODO: support `-count`
 	local d = 1
 	if options.backward then
 		d = -1
@@ -79,6 +84,7 @@ function M.next_matchgroup(options)
 end
 
 function M.next_match(options)
+	-- TODO: support `-count`
 	if patterns[current_group] then
 		vim.fn.search(patterns[current_group], options.flags or '')
 	end
